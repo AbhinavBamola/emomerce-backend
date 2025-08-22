@@ -1,4 +1,5 @@
 const{Schema,model}=require('mongoose');
+const bycrpt=require('bcrypt');
 
 const userSchema=new Schema({
 name:{
@@ -29,6 +30,16 @@ name:{
     ref:"ecomerceproductmodel"
 }]
 },{timestamps:true})
+
+userSchema.pre('save',async()=>{
+    const salt=bycrpt.salt(10);
+    const hashed=await bycrpt.hash(this.password,salt);
+    this.password=hashed;
+})
+
+userSchema.methods.comparePassword=async function(providedPassword) {
+    return await bycrpt.compare(providedPassword,this.password);
+}
 
 const userModel=model('ecomerceusermodel',userSchema);
 
