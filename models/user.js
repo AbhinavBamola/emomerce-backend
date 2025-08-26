@@ -15,6 +15,10 @@ name:{
     type:String,
     required:true
 }
+,role:{
+    type:String,
+    default:'user'
+}
 ,profileImage:{
     publicid:{
         type:String
@@ -31,10 +35,14 @@ name:{
 }]
 },{timestamps:true})
 
-userSchema.pre('save',async()=>{
-    const salt=bycrpt.salt(10);
+userSchema.pre('save',async function(next){
+    if(this.isModified('password')){
+        console.log(this);
+    const salt=await bycrpt.genSalt(10);
     const hashed=await bycrpt.hash(this.password,salt);
     this.password=hashed;
+    }
+    next();
 })
 
 userSchema.methods.comparePassword=async function(providedPassword) {

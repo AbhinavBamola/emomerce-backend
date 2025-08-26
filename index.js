@@ -23,7 +23,7 @@ app.use(express.json());
 
 app.use(authenticatorMiddleware);
 
-app.get('/',(req,res)=>{
+app.get('/api/me',(req,res)=>{
     res.json({Message:"hello from server",
         user:req.user,
     })

@@ -8,7 +8,8 @@ function generatetokenforuser(user){
             email:user.email,
             profileImage:user.profileImage,
             orders:user.orders,
-            cart:user.cart
+            cart:user.cart,
+            role:user.role,
         }
 
         const token= jwt.sign(paylod,secret);

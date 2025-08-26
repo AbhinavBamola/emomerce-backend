@@ -23,14 +23,19 @@ async function handlesignup(req,res) {
 async function handlelogin(req,res) {
 try{
             const{email,password}=req.body;
-        const user=await userModel.findOne({email,password});
+        const user=await userModel.findOne({email});
         if(!user){
-            throw new Error("Incorrect email or Password");
+            throw new Error("User Not Found");
         }
         else{
+            if(user.comparePassword(password)){
             const token=generatetokenforuser(user);
             res.cookie("token",token);
-            res.json({success:"Login successfull"});
+            res.json({user:user});
+            }
+            else{
+                  throw new Error("Incorrect Passsword");
+            }
         }
 }
 catch(err){
@@ -48,5 +53,23 @@ async function handlelogout(req,res) {
 
     }
 }
+async function handleadminregistration(req,res) {
+  try{
+      const {id,adminkey}=req.body;
+        if(adminkey=="createnewadmin"){
+            const user=await userModel.findById(id);
+            user.role="admin"
+            user.save();
+            res.json({user:user})
+        }
+        else{
+            throw new Error("Wrong admin key");
+        }
+  }
+  catch(err){
+    console.log(err);
+    res.json({error:err.message})
+  }
+}
 
-module.exports={handlesignup,handlelogin,handlelogout};
+module.exports={handlesignup,handlelogin,handlelogout,handleadminregistration};
